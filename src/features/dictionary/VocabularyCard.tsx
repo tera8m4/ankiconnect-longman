@@ -1,4 +1,7 @@
 import { Button, Card, CardActions, CardContent, List, ListItem, ListItemText, Typography } from "@mui/material";
+import { ankiRequestAddNote } from "../ankiConnect/ankiConnectAPI";
+import { store } from "../../app/store";
+import { useState } from "react";
 
 type VocabularyCardProps = {
     word: string;
@@ -7,11 +10,28 @@ type VocabularyCardProps = {
 }
 
 export default function VocabularyCard(props: VocabularyCardProps) {
+    const [isLoading, setIsLoading] = useState(false);
+
+    const handleAddNote = () => {
+        if (isLoading) {
+            return;
+        }
+
+        setIsLoading(true);
+
+        ankiRequestAddNote(store.getState().anki, {
+            ...props,
+            tag: "longman",
+        }).then(x => {
+            setIsLoading(false);
+        })
+    }
+
     return (
         <Card sx={{ minWidth: 345 }} variant="outlined">
             <CardContent>
                 <CardActions>
-                    <Button size="small">Add to Anki</Button>
+                    <Button size="small" onClick={handleAddNote} disabled={isLoading}>Add to Anki</Button>
                     {/* <Button size="small">Learn More</Button> */}
                 </CardActions>
                 <Typography gutterBottom variant="h3" component="div">
